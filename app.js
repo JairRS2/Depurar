@@ -61,7 +61,7 @@ app.post('/clean_database', async (req, res) => {
         console.log("Actualizando columnas en tbInventario...");
         // Establecemos los valores a 0. Si prefieres NULL, cambia 0 por NULL.
         const updateInventarioSql = `
-            UPDATE tbInventario
+            UPDATE tbInvUrea
             SET nExiMir = 0,
                 nExiSis = 0,
                 nUltCos = 0,
