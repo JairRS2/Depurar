@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Limpiar Tablas SQL</title>
+    <!-- Tailwind CSS CDN para estilos rápidos y responsivos -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Fuente Inter */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* Un color de fondo suave */
+        }
+        /* Estilos para el botón */
+        .clean-button {
+            background-image: linear-gradient(to right, #6EE7B7 0%, #34D399 51%, #10B981 100%);
+            margin: 10px;
+            padding: 15px 45px;
+            text-align: center;
+            text-transform: uppercase;
+            transition: 0.5s;
+            background-size: 200% auto;
+            color: white;
+            box-shadow: 0 0 20px #eee;
+            border-radius: 10px;
+            display: block;
+            cursor: pointer;
+            border: none;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        .clean-button:hover {
+            background-position: right center; /* Cambia la dirección del gradiente al pasar el ratón */
+            color: #fff;
+            text-decoration: none;
+            box-shadow: 0 0 30px #9ee7b7; /* Sombra más pronunciada */
+            transform: translateY(-2px); /* Pequeño efecto de elevación */
+        }
+        .clean-button:active {
+            transform: translateY(0); /* Vuelve a la posición original al hacer clic */
+            box-shadow: 0 0 10px #eee;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+    <div class="bg-white p-8 rounded-xl shadow-lg max-w-md w-full text-center">
+        <h1 class="text-3xl font-extrabold text-gray-800 mb-6">Limpiar Tablas de SQL Server</h1>
+        <p class="text-gray-600 mb-8">
+            Haz clic en el botón para truncar las tablas <code class="font-mono text-sm bg-gray-100 p-1 rounded">tbKardex</code>,
+            <code class="font-mono text-sm bg-gray-100 p-1 rounded">tbOrden</code>,
+            <code class="font-mono text-sm bg-gray-100 p-1 rounded">tbDespUrea</code>
+            y actualizar columnas específicas en <code class="font-mono text-sm bg-gray-100 p-1 rounded">tbInventario</code>.
+        </p>
+
+        <button id="cleanButton" class="clean-button">
+            Limpiar Tablas Ahora
+        </button>
+
+        <div id="messageBox" class="mt-8 p-4 rounded-lg text-sm hidden">
+            <!-- Los mensajes de éxito o error se mostrarán aquí -->
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('cleanButton').addEventListener('click', async () => {
+            const button = document.getElementById('cleanButton');
+            const messageBox = document.getElementById('messageBox');
+
+            // Mostrar mensaje de carga
+            messageBox.textContent = 'Limpiando tablas... Por favor, espera.';
+            messageBox.className = 'mt-8 p-4 rounded-lg text-sm bg-blue-100 text-blue-700 block';
+            button.disabled = true; // Deshabilitar el botón durante la operación
+
+            try {
+                const response = await fetch('/clean_database', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const data = await response.json();
+
+                if (response.ok) {
+                    messageBox.textContent = `Éxito: ${data.message}`;
+                    messageBox.className = 'mt-8 p-4 rounded-lg text-sm bg-green-100 text-green-700 block';
+                } else {
+                    messageBox.textContent = `Error: ${data.message}`;
+                    messageBox.className = 'mt-8 p-4 rounded-lg text-sm bg-red-100 text-red-700 block';
+                }
+            } catch (error) {
+                messageBox.textContent = `Error de conexión: ${error.message}. Asegúrate de que el servidor Node.js esté corriendo.`;
+                messageBox.className = 'mt-8 p-4 rounded-lg text-sm bg-red-100 text-red-700 block';
+                console.error('Error al limpiar la base de datos:', error);
+            } finally {
+                button.disabled = false; // Habilitar el botón de nuevo
+            }
+        });
+    </script>
+</body>
+</html>
